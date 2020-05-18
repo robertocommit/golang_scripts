@@ -27,6 +27,6 @@ func test(function_name string, function_param string) (output string) {
 }
 
 func main() {
-	output := test("ThisIsTheFunction", "Param_XXX")
+	output := test("ThisIsTheFunction", "ThisIsTheParameter")
 	fmt.Println(output)
 }
