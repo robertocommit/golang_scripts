@@ -17,12 +17,12 @@ func InsertResults(Db *sql.DB, results []Result) {
 		str6 := "$" + strconv.Itoa(6+i*6)
 		str_n := "(" + str1 + str2 + str3 + str4 + str5 + str6 + ")"
 		valueStrings = append(valueStrings, str_n)
-			valueArgs = append(valueArgs, elem.Value_1)
-			valueArgs = append(valueArgs, elem.Value_2)
-			valueArgs = append(valueArgs, elem.Value_3)
-			valueArgs = append(valueArgs, elem.Value_4)
-			valueArgs = append(valueArgs, elem.Value_5)
-			valueArgs = append(valueArgs, elem.Value_6)
+		valueArgs = append(valueArgs, elem.Value_1)
+		valueArgs = append(valueArgs, elem.Value_2)
+		valueArgs = append(valueArgs, elem.Value_3)
+		valueArgs = append(valueArgs, elem.Value_4)
+		valueArgs = append(valueArgs, elem.Value_5)
+		valueArgs = append(valueArgs, elem.Value_6)
 	}
     smt := `INSERT INTO results (
                 value_1, value_2, value_3, value_4, value_5, value_6)
