@@ -1,14 +1,8 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
-	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
-	"os"
 	"strconv"
-    "time"
-	"strings"
 )
 
 func InsertResults(Db *sql.DB, results []Result) {
