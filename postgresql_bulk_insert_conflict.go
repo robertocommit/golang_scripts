@@ -24,14 +24,14 @@ func InsertResults(Db *sql.DB, results []Result) {
 		valueArgs = append(valueArgs, elem.Value_5)
 		valueArgs = append(valueArgs, elem.Value_6)
 	}
-    smt := `INSERT INTO results (
-                value_1, value_2, value_3, value_4, value_5, value_6)
-            VALUES %s ON CONFLICT (value_1) DO UPDATE
-            SET value_2 = EXCLUDED.value_2,
-                value_3 = EXCLUDED.value_3,
-                value_4 = EXCLUDED.value_4`
-    smt = fmt.Sprintf(smt, strings.Join(valueStrings, ","))
-    _, err := Db.Exec(smt, valueArgs...)
+	smt := `INSERT INTO results (
+		value_1, value_2, value_3, value_4, value_5, value_6)
+	    	VALUES %s ON CONFLICT (value_1) DO UPDATE
+	    	SET value_2 = EXCLUDED.value_2,
+		value_3 = EXCLUDED.value_3,
+		value_4 = EXCLUDED.value_4`
+	smt = fmt.Sprintf(smt, strings.Join(valueStrings, ","))
+	_, err := Db.Exec(smt, valueArgs...)
 	if err != nil {
 		panic(err.Error())
 	}
