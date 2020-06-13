@@ -7,24 +7,32 @@ import (
 	"io/ioutil"
 	"os"
 	"reflect"
-	"strings"
+    "strings"
+    "regexp"
 )
 
 func main() {
 
     input_file_name := "allData.json"
     output_file_name := "outputFileName.csv"
-    separator := "|||"
+    separator := "|"
+
+    // Prepare regex to clean each row fron newlines
+    reg, err := regexp.Compile(`(?m)^\n*$`)
+    if err != nil {
+        fmt.Println(err)
+    }
 
 	var output []string
-	var keys []string
-
+    
 	fileIn, _ := ioutil.ReadFile(input_file_name)
-
+    
 	var results []map[string]interface{}
-
+    
 	json.Unmarshal([]byte(fileIn), &results)
-
+    
+    // Get columns' headers
+	var keys []string
 	for _, elem := range results {
 		infos := elem["Infos"]
 		iter := reflect.ValueOf(infos).MapRange()
@@ -34,24 +42,28 @@ func main() {
 		}
 	}
 
-	output = append(output, strings.Join(keys, separator))
+    // Append headers' to output
+    output = append(output, strings.Join(keys, separator))
 
-	number_rows := len(keys)
+    number_rows := len(keys)
 
+    // For each row assign a the value to the column it belongs   
 	for _, elem := range results {
 		infos := elem["Infos"]
 		iter := reflect.ValueOf(infos).MapRange()
 		row := make([]string, number_rows)
 		for iter.Next() {
-			position := IndexOf(keys, iter.Key().Interface().(string))
-			v := iter.Value().Interface().(string)
-			row[position] = v
+            key := iter.Key().Interface().(string)
+			position := IndexOf(keys, key)
+            v := iter.Value().Interface().(string)
+            processedV := reg.ReplaceAllString(v, "")
+            row[position] = processedV
 		}
-		row_merge := strings.Join(row, separator)
+        row_merge := strings.Join(row, separator)
 		output = append(output, row_merge)
-	}
+    }
 
-	WriteLines(output, output_file_name)
+    WriteLines(output, output_file_name)
 }
 
 func AppendIfMissing(slice []string, element string) []string {
@@ -69,7 +81,7 @@ func IndexOf(slice []string, element string) int {
 			return k
 		}
 	}
-	return -1 // not found.
+	return -1
 }
 
 func WriteLines(slice []string, path string) error {
