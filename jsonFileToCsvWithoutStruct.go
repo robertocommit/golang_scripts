@@ -47,7 +47,7 @@ func main() {
 			v := iter.Value().Interface().(string)
 			row[position] = v
 		}
-		row_merge := strings.Join(row, "|||")
+		row_merge := strings.Join(row, separator)
 		output = append(output, row_merge)
 	}
 
