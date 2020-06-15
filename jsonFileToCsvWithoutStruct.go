@@ -1,3 +1,5 @@
+// This script works (ATM) only with fully stringly Structs
+
 package main
 
 import (
@@ -26,7 +28,7 @@ func main() {
 	// Get columns' headers
 	var keys []string
 	for _, elem := range results {
-		infos := elem["Infos"]
+		infos := elem
 		iter := reflect.ValueOf(infos).MapRange()
 		for iter.Next() {
 			k := iter.Key().Interface().(string)
@@ -41,7 +43,7 @@ func main() {
 
 	// For each row assign a the value to the column it belongs
 	for _, elem := range results {
-		infos := elem["Infos"]
+		infos := elem
 		iter := reflect.ValueOf(infos).MapRange()
 		row := make([]string, number_rows)
 		for iter.Next() {
