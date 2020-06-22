@@ -10,10 +10,15 @@ import (
 )
 
 func main() {
+	
+	file_name := "output.csv"
+	separator := "|"
+	column_pivot := 0
+	
 	var data []string
-	var mobiles []string
+	var uniques []string
 
-	csvfile, _ := os.Open("output.csv")
+	csvfile, _ := os.Open(file_name)
 
 	r := csv.NewReader(csvfile)
 
@@ -23,9 +28,8 @@ func main() {
 			break
 		}
 		if len(record) > 0 {
-			t_mobile := strings.Split(record[0], "|")
-			mobile := t_mobile[0]
-			if !IsPresent(&mobiles, mobile) {
+			cell := strings.Split(record[0], separator)[column_pivot]
+			if !IsPresent(&uniques, cell) {
 				data = append(data, record[0])
 			}
 		}
