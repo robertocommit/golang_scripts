@@ -8,15 +8,15 @@ import (
 )
 
 type User struct {
-	ID       int
-	Username string
+    ID       int
+    Username string
+    Session []Session `gorm:"ForeignKey:Userid"`
 }
 
 type Session struct {
 	ID     int
 	Email  string
 	Userid int
-	User   User `gorm:"ForeignKey:Userid;AssociationForeignKey:ID"`
 }
 
 func main() {
