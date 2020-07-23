@@ -11,14 +11,8 @@ import (
 func main() {
 	c := colly.NewCollector()
 
-	type Job struct {
-		Url        string
-		Title      string
-		Department string
-	}
-
-	c.OnHTML(".work-openings", func(e *colly.HTMLElement) {
-		e.ForEach(".list-box-item", func(_ int, el *colly.HTMLElement) {
+	c.OnHTML("body", func(e *colly.HTMLElement) {
+		e.ForEach(".yourclass", func(_ int, el *colly.HTMLElement) {
 			result_title := el.ChildText("a")
 			result_url := el.ChildAttr("a", "href")
 			fmt.Println(result_title, result_url)
