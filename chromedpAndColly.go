@@ -7,31 +7,32 @@ import (
 	"os"
 
 	"github.com/chromedp/chromedp"
-	"github.com/gocolly/colly/v2"
+	"github.com/gocolly/colly"
 	. "github.com/logrusorgru/aurora"
 )
 
-func Demo() {
+func main() {
+
 	start_url := "YOUR_URL"
-	file_name := "YOUR_FILE_NAME.html"
-	type YourStruct struct {
-		Field1       string
-		Field2       string
-	}
+	file_name := "YOUR_FILE_NAME"
+
+	// CHROMEDP GET HTML CODE
 	ctx, cancel := chromedp.NewContext(context.Background())
 	defer cancel()
 	var initialResponse string
 	if err := chromedp.Run(ctx,
 		chromedp.Navigate(start_url),
-		chromedp.WaitVisible(".YOUR_HTML_TAG"),
+		chromedp.WaitVisible("YOUR_FIRST_TAG"),
 		chromedp.OuterHTML("html", &initialResponse),
 	); err != nil {
 		panic(err.Error())
 	}
 	SaveResponseToFileWithFileName(initialResponse, file_name)
+
+	// COLLY SCRAPE INFORMATION FROM HTML
 	c := colly.NewCollector()
-	c.OnHTML("YOUR_OTHER_HTML_TAG", func(e *colly.HTMLElement) {
-		// YOUR COLLY STUFF
+	c.OnHTML("YOUR_SECOND_TAG", func(e *colly.HTMLElement) {
+		fmt.Println(e)
 	})
 	c.OnRequest(func(r *colly.Request) {
 		fmt.Println(Gray(8-1, "Visiting"), Gray(8-1, r.URL.String()))
@@ -42,6 +43,8 @@ func Demo() {
 	c.OnError(func(r *colly.Response, err error) {
 		fmt.Println(Red("Request URL:"), Red(r.Request.URL))
 	})
+
+	// COLLY OPEN HTML FILE
 	t := &http.Transport{}
 	t.RegisterProtocol("file", http.NewFileTransport(http.Dir("/")))
 	dir, err := os.Getwd()
