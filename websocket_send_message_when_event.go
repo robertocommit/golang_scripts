@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -9,18 +8,14 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var c = make(chan int)
-
-var i int
+var wsS []string
+var c = make(chan string)
 
 func main() {
-
 	router := mux.NewRouter()
-	router.HandleFunc("/", Home)
-	router.HandleFunc("/ws", Ws)
-
+	router.HandleFunc("/{param}", Home)
+	router.HandleFunc("/ws/{username}", Ws)
 	log.Info("Application is running on port 8080..")
-
 	srv := &http.Server{
 		Handler: router,
 		Addr:    "localhost:8080",
@@ -29,8 +24,8 @@ func main() {
 }
 
 func Home(w http.ResponseWriter, r *http.Request) {
-	c <- i
-	i++
+	param := mux.Vars(r)["param"]
+	c <- param
 }
 
 var upgrader = websocket.Upgrader{
@@ -39,24 +34,31 @@ var upgrader = websocket.Upgrader{
 }
 
 func Ws(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+	wsS = append(wsS, username)
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		return
 	}
-
-	fmt.Println("CONNECRED WITH WS")
-
+	go func() {
+		for {
+			_, _, err := ws.ReadMessage()
+			if err != nil {
+				return
+			}
+		}
+	}()
 	go func() {
 		for {
 			s1 := <-c
-			fmt.Println("I HAVE RECEIVED,", s1)
-			err := ws.WriteMessage(1, []byte("I AM SENDING A MESSAGE"))
-			if err != nil {
-				log.Println("write:", err)
-				ws.Close()
+			if s1 == username {
+				err := ws.WriteMessage(1, []byte("I AM SENDING USER DATA"))
+				if err != nil {
+					ws.Close()
+					return
+				}
 			}
 		}
 	}()
 }
-
